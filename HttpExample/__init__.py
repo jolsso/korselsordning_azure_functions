@@ -1,9 +1,10 @@
 import logging
+import datetime
 
 import azure.functions as func
 
 
-def main(req: func.HttpRequest) -> func.HttpResponse:
+def main(req: func.HttpRequest, msg: func.Out[func.QueueMessage]) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
     name = req.params.get('name')
@@ -16,6 +17,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             name = req_body.get('name')
 
     if name:
+        # MODIFICATION: write the a message to the message queue, using msg.set
+        msg.set(f"Request made for {name} at {datetime.datetime.now()}")
         return func.HttpResponse(f"Hello {name}!")
     else:
         return func.HttpResponse(
